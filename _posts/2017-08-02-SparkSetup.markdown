@@ -30,7 +30,6 @@ So let me list out the steps I followed to set up Spark :
 - **Step 7**: Download winutils.exe binary from https://github.com/steveloughran/winutils  repository.
 Save the downloaded hadoop zip package in a directory of your choice, unzip it under a folder named “bin” and set the environment variable HADOOP_HOME to reflect the directory with winutils.exe (without bin).Update PATH environment variable with %HADOOP_HOME%\bin.
 Create a directory called C:\tmp\hive. If you do have access to create tmp folder in parent drive, you could set to other directory location as well. but you need to create appropriate configuration setting for hive. This can be done by pointing hive.exec.scratchdir to the new location.
-
 Create a hive-site.xml file with the content below. You need to create a environment variable HADOOP_CONF_DIR pointing to location of hive-site.xml
 
 ![Download Spark](/assets/sparksetup/hive-site.png){:class="img-responsive"}
