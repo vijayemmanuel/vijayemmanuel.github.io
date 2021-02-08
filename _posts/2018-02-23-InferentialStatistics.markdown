@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Inferential Statistics
-date: 2017-02-23 19:20:23 +0900
+date: 2018-02-23 19:20:23 +0900
 category: datascience
 ---
 
