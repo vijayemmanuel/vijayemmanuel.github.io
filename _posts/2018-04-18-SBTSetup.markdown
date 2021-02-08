@@ -1,0 +1,41 @@
+---
+layout: post
+title: SBT Setup behind corporate proxy
+date: 2018-04-18 19:20:23 +0900
+category: scala
+---
+
+Normally in corporate environment,there are restrictions in accessing internet directly from a browser. Often they are routed through proxy servers.Now this causes problem when we install SBT and want to use libraries from repositories.
+
+So here goes some of the tricks to have a smooth install and working of SBT.
+
+- Download latest SBT zip from <http://www.scala-sbt.org/download.html>
+- Unzip the package and ensure that you add the path of sbt\bin in your %PATH% enviornment variable.
+- Ensure that you have appropriate version of JAVA. This can be checked by using the command `java -version`
+- Set the following in  `.sbt\conf\sbtconfig.txt`
+
+```
+# Set the extra SBT options
+-Dsbt.repository.secure=false
+-Dsbt.log.format=true
+-Dhttps.proxyHost=<your proxy server>
+-Dhttps.proxyPort=<your proxy server port>
+-Dhttp.proxyHost=<your proxy server>
+-Dhttp.proxyPort=<your proxy server port>
+```
+
+- Set the repositories in `.sbt\repositories`. .sbt folder is the place where SBT downloads the libraries.
+
+```
+[repositories]
+local
+maven-central: http://repo1.maven.org/maven2/
+typesafe-sbtplugin-releases: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases
+typesafe-sbtplugin-releases-ivypattern: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases,[organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+typesafe-releases: http://repo.typesafe.com/typesafe/ivy-releases/
+typesafe-releases-ivypattern: http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+```
+
+Thats it!!
+
+Use sbt from your console… and Enjoy using Scala.
