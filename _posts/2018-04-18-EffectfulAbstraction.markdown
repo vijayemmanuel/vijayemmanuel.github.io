@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Effectful Abstractions
-date: 2018-04-18 19:20:23 +0900
+date: 2018-08-18 19:20:23 +0900
 category: scala
 ---
 
