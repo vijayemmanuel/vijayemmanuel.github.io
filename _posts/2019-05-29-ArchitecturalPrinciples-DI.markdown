@@ -2,18 +2,17 @@
 layout: post
 title: Architectural Principles - Dependency Inversion
 date: 2019-05-29 19:20:23 +0900
-category: software architecture
+category: architecture
 ---
 
-This is a series of posts I am writing to investigate the common design patterns followed in Object oriented architecture (OOP). I also compare on how these architectural principle is followed in Functional programming (FP). 
 Architecture is important while desiging buildings, so it is in software. If we do not built a good design, then we might not be able to scale and maintain applications well when requirements of software keeps on changing. 
+This is a series of posts I am writing to investigate the common design patterns followed in Object oriented architecture (OOP). Whereever possible, I also compare on how these architectural principle is followed in Functional programming (FP). 
 
-Here are a few common architectural pattern followed in C#. 
+Here are a few common architectural pattern followed in mainstream languages. 
 
 - Dependency Inversion
-- Encapsulation
-- Seperation of Concerns
 - Single Responsibility
+- Encapsulation
 - Don't repeat yourself
 
 ### Dependency Inversion (DI) : The C# way
