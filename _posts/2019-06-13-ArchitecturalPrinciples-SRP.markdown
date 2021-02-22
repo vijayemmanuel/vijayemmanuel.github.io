@@ -99,7 +99,9 @@ The goals of both concepts are the same, however, you can't always say you have 
 ### Microservice
 When this principle is applied to application architecture and taken to its logical endpoint, you get microservices. A given microservice should have a single responsibility. If you need to extend the behavior of a system, it's usually better to do it by adding additional microservices, rather than by adding responsibility to an existing one.
 
+This eventually leads to the domain driven design. Domains needs to be split in sub domain and each sub domain forms what we call a "Bounded Context"
+They provide a way of tackling complexity in large applications or organizations by breaking it up into separate conceptual modules. Each conceptual module then represents a context that is separated from other contexts (hence, bounded), and can evolve independently. Each bounded context should ideally be free to choose its own names for concepts within it, and should have exclusive access to its own persistence store.
+
+At a minimum, individual web applications should strive to be their own bounded context, with their own persistence store for their business model, rather than sharing a database with other applications. Communication between bounded contexts occurs through programmatic interfaces, rather than through a shared database, which allows for business logic and events to take place in response to changes that take place. 
+
 In Scala, one of the best microservice pattern implementation can be seen in Akka toolkit. 
-
-Some of the common patterns followed here are Domain Driven Design (DDD)/ Hexagonal Architecture.
-
