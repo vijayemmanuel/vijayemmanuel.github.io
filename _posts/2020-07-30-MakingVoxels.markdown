@@ -11,7 +11,7 @@ Voxels are used in 3D object analysis, clash computation algorithms, 3D redering
 Here I provide some basic understanding of how we can convert an STL file (another format to represent 3D objects) to voxels. Special credit to this github repository <https://github.com/cpederkoff/stl-to-voxel> from which my understanding is derived 
 
 
-![EiffelTowerSTL](/assets/geometry/Eiffel_stl.jpg){:class="img-responsive"}
+![EiffelTowerSTL](/assets/geometry/eiffel_stl.jpg){:class="img-responsive"}
 
 ### Step 1: 
 
@@ -41,7 +41,7 @@ For each slicing plane find the pixels that need to be marked "white" if the lin
 Finally here is the C# implmentation of the converter <https://github.com/vijayemmanuel/Voxelizer>
 I also provide a simulation of the voxels generated from a STL file
 
-![EiffelTowerVoxel](/assets/geometry/Eiffel_voxel.jpeg){:class="img-responsive"}
+![EiffelTowerVoxel](/assets/geometry/eiffel_voxel.jpeg){:class="img-responsive"}
 
 
 
