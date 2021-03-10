@@ -86,13 +86,13 @@ code {
 }
 
 .content {
-	/*margin-left: 180px;*/
+	margin-left: 180px;
 	flex: 1 1 auto;
 	padding: 0px 30px;
 }
 
 .sidebar {
-	/*position: fixed;*/
+	position: fixed;
 	display: flex;
 	flex-flow: column nowrap;
 	flex: 0 0 220px;
@@ -100,6 +100,7 @@ code {
 	z-index: 1;
 	background-color: #222;
 	color: #fff;
+	height: 100%;
 }
 
 .sidebar-item {
@@ -287,7 +288,7 @@ footer {
 }
 
 .sidebar-footer {
-	margin-top: 80px;
+	margin-block-start: auto;
 	font-size: 0.75em;
 	font-weight: lighter;
 	font-family: "Roboto";
@@ -306,6 +307,7 @@ footer {
 	}
 
 	.content {
+		margin-left: 10px;
 		padding: 0px;
 	}
 	.container {
@@ -313,6 +315,7 @@ footer {
 	}
 
 	.sidebar {
+		position: inherit;
 		font-size: 0.8em;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
