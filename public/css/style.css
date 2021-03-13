@@ -299,6 +299,93 @@ footer {
 	color: #ccc;
 }
 
+/* Share buttons */
+.sharebuttons {
+	margin: 0 auto 0 auto;
+}
+  
+  .sharebuttons ul {
+	margin: 25px 0 0 0;
+	text-align: center;
+  }
+  
+  .sharebuttons ul li {
+	display: inline;
+    padding-left: 10px;
+  }
+
+  .sharebuttons ul li:last-child {
+    margin-right: 0;
+    padding-right: 0;
+}
+ .sharebuttons ul li:first-child {
+	padding-left: 0;
+}
+  
+  .sharebuttons ul li a {
+	text-decoration: none;
+  }
+
+  .sharebuttons ul li svg {
+	width: 40px;
+	height: 40px;
+  }
+
+  /* Social Me buttons */
+.socialme {
+	margin: 0 auto 0 auto;
+}
+  
+  .socialme ul {
+	margin: 25px 0 0 0;
+	text-align: left;
+  }
+  
+  .socialme ul li {
+	display: inline;
+    padding-left: 10px;
+  }
+
+  .socialme ul li:last-child {
+    margin-right: 0;
+    padding-right: 0;
+}
+ .socialme ul li:first-child {
+	padding-left: 0;
+}
+  
+  .socialme ul li a {
+	text-decoration: none;
+  }
+  
+  .socialme ul li svg {
+	width: 40px;
+	height: 40px;
+  }
+  
+  .reddit svg {
+	fill: #FF4500;
+  }
+
+  .github svg {
+	  fill: #181717
+  }
+  .gmail svg {
+	fill: #EA4335
+}
+  
+ .hn svg {
+	fill: #F0652F;
+  }
+  
+  .twitter svg {
+	fill: #1DA1F2;
+  }
+  
+  .linkedin svg {
+	fill: #0077B5;
+  }
+
 
 @media (max-width: 576px) {
 	article {

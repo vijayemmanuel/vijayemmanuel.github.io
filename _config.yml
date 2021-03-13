@@ -24,7 +24,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   learning & experiences
 # baseurl: "/" # the subpath of your site, e.g. /blog
 # url: "http://ejjoo.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-github_username: vijayemmanuel
+#github_username: vijayemmanuel
 highlighter: rouge
 svg:
   optimize: true
@@ -36,6 +36,9 @@ plugins:
   - jekyll-feed
 category_dir: category/
 tag_dir: tag/
+
+github: "vijayemmanuel"
+linkedin: "vijay-pazheparampil-b4886614"
 
 # Exclude from processing.
 # The following items will not be processed, by default.

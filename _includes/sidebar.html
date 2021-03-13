@@ -3,12 +3,33 @@
 		<a href="/about/">{{ site.title }}</a>
 	</div>
 	<p class="lead">{{ site.description }}</p>
-	{%- if social.github -%}
-		<a rel="me" href="https://github.com/{{ social.github | cgi_escape | escape }}" title="{{ social.github | escape }}">
-			<svg class="svg-icon grey">
-				<use xlink:href="{{ '/assets/minima-social-icons.svg#github' | relative_url }}" />
-			</svg></a></li>
-	{%- endif -%}
+	<div class="socialme">
+		<ul>
+			{%- if site.github -%}
+			<li class="github">
+				<a rel="me"  href="https://github.com/{{ site.github | cgi_escape | escape }}" title="{{ site.github | escape }}">
+					{% include social/github.svg %}
+				</a>
+			</li>
+			{%- endif -%}
+			{%- if site.email -%}
+			<li class="gmail">
+				<a rel="me"  href="https://mail.google.com/mail/?view=cm&fs=1&to={{ site.email}} &su=SUBJECT&body=BODY" title="{{ site.gmail | escape }}">
+					{% include social/gmail.svg %}
+				</a>
+			</li>
+			{%- endif -%}
+			{%- if site.linkedin -%}
+			<li class="linkedin">
+				<a rel="me"  href="https://www.linkedin.com/in/{{ site.linkedin | cgi_escape | escape }}" title="{{ site.linkedin | escape }}">
+					{% include social/linkedin.svg %}
+				</a>
+			</li>
+			{%- endif -%}
+		</ul>
+	</div>
+	
+
 </div>
 
 <div class="sidebar-item sidebar-nav">
