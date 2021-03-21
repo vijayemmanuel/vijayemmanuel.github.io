@@ -7,6 +7,8 @@ category: general
 
 ![PartyParrot](/assets/general/partyparrot.jpg){:class="img-responsive"}
 
+This puzzle appeared on https://coding-adventures.sml.io/game hosted by SoftwareMill
+
 ### Task 1 - Warsaw
 
 At last! After all the time spent meeting everybody online, we can’t wait to embark on a journey to experience the conference vibe again. Remember Scalar 2019? Do you miss the atmosphere? Let’s go there with Party Parrot. Help her get ready and pack.
