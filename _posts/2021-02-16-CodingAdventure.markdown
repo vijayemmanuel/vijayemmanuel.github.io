@@ -497,8 +497,6 @@ The minimum engine force F [N] required to slow down from v0 to v in time t.
 ```
 Your input data
 51.50 0.38 32.45
-or 
-87.80 0.77 64.64
 ``` 
 
 ```
