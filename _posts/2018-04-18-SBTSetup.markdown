@@ -5,36 +5,69 @@ date: 2018-04-18 19:20:23 +0900
 category: scala
 ---
 
-Normally in corporate environment,there are restrictions in accessing internet directly from a browser. Often they are routed through proxy servers.Now this causes problem when we install SBT and want to use libraries from repositories.
+Normally in corporate environment,there are restrictions to access internet directly from your IDE. Often they are routed through proxy servers. Configuring your IDE to connect to internt can cause lot of researching time and sometimes even leading to no solution. Here I explain how to deal with the configuration with SBT in Intellij IDE on Windows OS.
 
-So here goes some of the tricks to have a smooth install and working of SBT.
-
+- Download latest Intellij Community edition IDE from <https://www.jetbrains.com/idea/download/> and install
+- Download JDK and install. Check installtion by using the command `java -version`
 - Download latest SBT zip from <http://www.scala-sbt.org/download.html>
-- Unzip the package and ensure that you add the path of sbt\bin in your %PATH% enviornment variable.
-- Ensure that you have appropriate version of JAVA. This can be checked by using the command `java -version`
-- Set the following in  `.sbt\conf\sbtconfig.txt`
+- Unzip the SBT package in a known location
+- Go to your user home directory, usually C:\ Users \ _username_ \ and create a folder with name '.sbt'. Under it create a file named 'repositories'
 
-```
-# Set the extra SBT options
--Dsbt.repository.secure=false
--Dsbt.log.format=true
--Dhttps.proxyHost=<your proxy server>
--Dhttps.proxyPort=<your proxy server port>
--Dhttp.proxyHost=<your proxy server>
--Dhttp.proxyPort=<your proxy server port>
-```
-
-- Set the repositories in `.sbt\repositories`. .sbt folder is the place where SBT downloads the libraries.
+Add the following contents to it
 
 ```
 [repositories]
 local
-maven-central: http://repo1.maven.org/maven2/
-typesafe-sbtplugin-releases: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases
-typesafe-sbtplugin-releases-ivypattern: http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases,[organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
-typesafe-releases: http://repo.typesafe.com/typesafe/ivy-releases/
-typesafe-releases-ivypattern: http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+maven-central: https://repo1.maven.org/maven2/
 ```
+
+- Open Intellij Idea IDE and configure the proxy settings. Install Scala plugin and restart
+
+![Proxy Configuration on Intellij](/assets/sbtintellijsetup/config1.jpeg){:class="img-responsive"}
+
+- After restart, open a dummy SBT project and go to Settings 
+
+![SBT Configuration on Intellij](/assets/sbtintellijsetup/config2.jpeg){:class="img-responsive"}
+
+Configure JVM JRE from the JDK location
+Configure VM parameters 
+
+```
+-Dhttps.proxyHost=<your proxy server>
+-Dhttps.proxyPort=<your proxy server port>
+-Dhttp.proxyHost=<your proxy server>
+-Dhttp.proxyPort=<your proxy server port>
+-Dhttp.proxyUser=<your username>
+-Dhttp.proxyPassword=<your password>
+-Djavax.net.ssl.trustStore=<location to you Java trust store>
+```
+Configure Launcher to Custom and set the path to sbt-launcher.jar from the SBT zip location downloaded before.
+
+- For the setup of the Java trust store follow the process below
+
+1. Go to the site https://repo1.maven.org/maven2/ and download the certificate from the browser in DER encoded binary X.509 format
+2. Make a back up of the Java keystore file. The Java keystore is located at %JAVA_HOME%\lib\security\cacerts where %JAVA_HOME% is the JDK installed location
+3. Import the good proxy root certificate. In a command prompt naviate to JDK installation location and type 
+
+```
+bin\keytool.exe -importcert -trustcacerts -file "<drive:\cert.cer>" -keystore <backup copy of cacerts> -alias <alias name> -storepass changeit
+```
+
+The -alias value must be unique in the destination keystore. If it is duplcated, you might experience import errors. You can output the cacerts to a text file to manually confirm the existing certificates using a text editor. Type
+
+```
+bin\keytool.exe -list -v -keystore <backup copy of cacerts> <output location\cacertsoutput.txt>
+```
+
+- Build the SBT project. Normally you should see that the build should successful after SBT downloads the library references from Maven repo. 
+
+If you see the message like this below, check the setup of Java trust store and retry.
+
+```
+download error: Caught javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderExcepton: .....
+[error] [launcher] could not retrieve sbt ....
+```
+
 
 Thats it!!
 
