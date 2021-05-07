@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SBT Setup behind corporate proxy
+title: SBT Setup behind corporate proxy with Intellij IDE
 date: 2018-04-18 19:20:23 +0900
 category: scala
 ---
@@ -8,10 +8,9 @@ category: scala
 Normally in corporate environment,there are restrictions to access internet directly from your IDE. Often they are routed through proxy servers. Configuring your IDE to connect to internt can cause lot of researching time and sometimes even leading to no solution. Here I explain how to deal with the configuration with SBT in Intellij IDE on Windows OS.
 
 - Download latest Intellij Community edition IDE from <https://www.jetbrains.com/idea/download/> and install
-- Download JDK and install. Check installtion by using the command `java -version`
-- Download latest SBT zip from <http://www.scala-sbt.org/download.html>
-- Unzip the SBT package in a known location
-- Go to your user home directory, usually C:\ Users \ _username_ \ and create a folder with name '.sbt'. Under it create a file named 'repositories'
+- Download JDK and install. Check installation by using the command `java -version`
+- Download latest SBT zip from <http://www.scala-sbt.org/download.html> and unzip the SBT package in a known location
+- Go to your user home directory, usually C:\Users\<_username_>\ and create a folder with name '.sbt'. Under it create a file named 'repositories'
 
 Add the following contents to it
 
@@ -30,6 +29,7 @@ maven-central: https://repo1.maven.org/maven2/
 ![SBT Configuration on Intellij](/assets/sbtintellijsetup/config2.jpeg){:class="img-responsive"}
 
 Configure JVM JRE from the JDK location
+
 Configure VM parameters 
 
 ```
@@ -41,6 +41,7 @@ Configure VM parameters
 -Dhttp.proxyPassword=<your password>
 -Djavax.net.ssl.trustStore=<location to you Java trust store>
 ```
+
 Configure Launcher to Custom and set the path to sbt-launcher.jar from the SBT zip location downloaded before.
 
 - For the setup of the Java trust store follow the process below
@@ -71,4 +72,4 @@ download error: Caught javax.net.ssl.SSLHandshakeException: sun.security.validat
 
 Thats it!!
 
-Use sbt from your console… and Enjoy using Scala.
+Use sbt from your Intellij IDE and Enjoy using Scala.
