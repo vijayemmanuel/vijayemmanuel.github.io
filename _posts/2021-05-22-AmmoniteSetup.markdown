@@ -36,7 +36,7 @@ If you want to know the steps for creating Java truststore please refer <https:/
 
 
 # Install Ammonite using Coursier
-Now I explain I few coursier commands which will help you understand them as well as install Ammonite evnetually
+Now I explain I few coursier commands which will help you understand them as well as install Ammonite eventually
 
 - Allow one to complete Maven coordinates. Here we get all the available versions of ammonite
 
@@ -69,21 +69,145 @@ Now I explain I few coursier commands which will help you understand them as wel
 ```
 
 # Running Ammonite and customizing
-- Start ammonite (amm is the shorthand for ammonite)
+- Start ammonite (amm is the shorthand for ammonite) Ammonite does a remote logging. To stop doing it use the flag below
 
 ```
-> amm
+> amm --no-remote-logging 
 ```
 
 - We can customise the start up behaviour by adding a file named predef.sc in $HOME/.ammonite folder
 
 ```
-import $ivy.`com.lihaoyi::ammonite-ops:2.3.8`, ammonite.ops._
+import $ivy.`com.lihaoyi::ammonite-ops:2.3.8`, ammonite.ops._ //, ammonite.ops.Implicit.Wd._
 import $ivy.`com.lihaoyi::ammonite-shell:2.3.8`, ammonite.shell._
-val shellSession = ammonite.ShellSession()
-import shellSession._
+import $ivy.`org.scalatest::scalatest:3.2.9`, org.scalatest.Assertions._ //for intercept. usage intercept[InteractiveShelloutException] 
+//val shellSession = ammonite.ShellSession()
+//import shellSession._
+
+import scala.collection.mutable
+
+import ammonite.runtime.tools.{grep, time}
+import ammonite.repl.tools.desugar
+import ammonite.ops.{% -> _, %% => _, _}
+
+lazy val % = new ammonite.ops.Command (
+    Vector("cmd","/c"),
+    Map.empty,
+    ammonite.ops.Shellout.executeInteractive _
+)
+lazy val %% = new ammonite.ops.Command (
+    Vector("cmd","/c"),
+    Map.empty,
+    ammonite.ops.Shellout.executeIStream _
+)
+
+//Switch reference of `current` directory
+object cd {
+    import ammonite.util.Ref
+
+    val focus :Ref[Path] : Ref(pwd)
+    //override def toString = focus().toString
+
+    //Change current directory of this repl session to given [[Path]]
+    def apply(arg : Path): Unit = {
+        if (exists! arg)
+           if(arg == root || arg.isDir) {
+               focus() == arg
+           } else {
+               println (s"$arg is not a directory")
+           }
+           else println(s"$arg does not exist")
+    }
+
+    def ~ = apply(home)
+    def / (relpath: RelPath) = apply(focus()/relpath)
+}
+
+implicit def wd :Path = cd.focus()
+repl.prompt.bind(wd.segments.toList.lastOption.getOrElse("") + " @ ")
+
+//To change the default height of pprint in REPL
+//repl.pprinter() = repl.pprintter().copy(defaultHeight = 5)
 ```
 
 Thats it!!
 
 Use Ammonite like your default bash shell and more...
+
+- Example with Json parsing
+Consider the following JSON file which needs to be parsed. 
+
+```
+{
+    "ResourceTagMappingList" : [
+        {
+            "ResourceARN" : "arn:aws:cloudformation:eu-west-1:123456789:stack/jenkins/uuid",
+            "Tags" : [
+                {
+                    "Key" : "owner",
+                    "Value": "Devops"
+                },
+                {
+                    "Key" : "project",
+                    "Value": "CI"
+                },
+                {
+                    "Key" : "aspire",
+                    "Value": "yolo"
+                }
+
+            ]
+        },
+        {
+            "ResourceARN" : "arn:aws:kms:eu-west-1:123456789:key/uuid",
+            "Tags" : [
+                {
+                    "Key" : "owner",
+                    "Value": "Dev"
+                },
+                {
+                    "Key" : "project",
+                    "Value": "Feature1"
+                }
+
+            ]
+        },
+
+    ]
+}
+```
+
+Ammonite Way to read Json with Circe
+
+```
+@ import $ivy.`io.circe::circe-optics:0.14.1`
+@ import $ivy.`io.circe::circe-parser:0.14.1`
+@ import io.circe.parser._
+@ val parsed = parse(read wd/ "aws.json"))
+
+//Optics
+@ root.ResourceTagMappingList.each.ResourceARN.string.getAll(parsed.right.get)
+
+//Generics
+@ import $ivy.`io.circe::circe-generic:0.14.1`
+@ import io.circe._, io.circe.generic.semiauto._
+@ case class Tag(Key: String, Value: String)
+@ case class Resource(ResourceARN: String, Tags: List[Tag])
+@ case class ResourceList(ResourceTagMappingList: List[Resource])
+
+@ implicit val tag : Decoder[Tag] = deriveDecoder[Tag]
+@ implicit val resource : Decoder[Resource] = deriveDecoder[Resource]
+@ implicit val resourcelist : Decoder[ResourceList] = deriveDecoder[ResourceList]
+
+@ val decoded = decode[ResourceList](parsed.right.get.toString) match {
+    case Right(decodedJson) => decodedJson.asInstanceOf[ResourceList]
+    case Left(_) => ???
+}
+@ decoded.ResourceTagMappingList.map( x => x.ResourceARN, x.Tags.filter ( y => y.Key == "owner" || y.Key == "project")))
+
+```
+
+
+
+
+Credits <https://gist.github.com/lettenj61>
