@@ -88,7 +88,7 @@ import scala.collection.mutable
 
 import ammonite.runtime.tools.{grep, time}
 import ammonite.repl.tools.desugar
-import ammonite.ops.{% -> _, %% => _, _}
+import ammonite.ops.{ % -> _, %% => _, _}
 
 lazy val % = new ammonite.ops.Command (
     Vector("cmd","/c"),
