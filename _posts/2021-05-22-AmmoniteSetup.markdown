@@ -134,7 +134,10 @@ Thats it!!
 
 Use Ammonite like your default bash shell and more...
 
-- Example with Json parsing
+
+- Ammonite Way to read Json with Circe
+
+Example with Json parsing
 Consider the following JSON file which needs to be parsed. 
 
 ```
@@ -177,20 +180,21 @@ Consider the following JSON file which needs to be parsed.
 }
 ```
 
-Ammonite Way to read Json with Circe
-
 ```
-@ import $ivy.`io.circe::circe-optics:0.14.1`
+
 @ import $ivy.`io.circe::circe-parser:0.14.1`
 @ import io.circe.parser._
-@ val parsed = parse(read wd/ "aws.json"))
+@ val parsed = parse(read (wd/ "aws.json"))
 
 //Optics
+@ import $ivy.`io.circe::circe-optics:0.14.1`
 @ root.ResourceTagMappingList.each.ResourceARN.string.getAll(parsed.right.get)
 
 //Generics
 @ import $ivy.`io.circe::circe-generic:0.14.1`
 @ import io.circe._, io.circe.generic.semiauto._
+
+// Build case classes that represent the structure of Json
 @ case class Tag(Key: String, Value: String)
 @ case class Resource(ResourceARN: String, Tags: List[Tag])
 @ case class ResourceList(ResourceTagMappingList: List[Resource])
@@ -203,7 +207,71 @@ Ammonite Way to read Json with Circe
     case Right(decodedJson) => decodedJson.asInstanceOf[ResourceList]
     case Left(_) => ???
 }
-@ decoded.ResourceTagMappingList.map( x => x.ResourceARN, x.Tags.filter ( y => y.Key == "owner" || y.Key == "project")))
+
+// Manipulate the decoded Json to any form
+@ val result = decoded.ResourceTagMappingList.map( x => (x.ResourceARN +: x.Tags.sort.map( y => y.Key + ":" + y.Value))).map(_mkString(",")).mkString("\n")
+
+//Write the Json to a file
+@ write (wd/ "result.json", result)
+
+```
+
+- Ammonite Way to make API calls (protected by Oauth) with Sttp 
+Example with an recursive API call which return some page with token pointing to next page.
+
+```
+{
+    "values" : [
+        {
+            "ResourceARN" : "arn:aws:cloudformation:eu-west-1:123456789:stack/jenkins/uuid",
+            "transaction" : {
+                    "Key" : "owner",
+                    "Value": "Devops"
+                    "startTime" : "2021-09-22T11:42:34.683432Z"
+                }
+        },
+        {
+            "ResourceARN" : "arn:aws:kms:eu-west-1:123456789:key/uuid",
+            "transaction" : {
+                    "Key" : "owner",
+                    "Value": "Testing"
+                    "startTime" : "2021-10-22T11:42:34.683432Z"
+                }
+        }
+    ],
+    "nextPageToken : "nextPage"
+}
+
+```
+
+
+```
+
+import $ivy.`com.softwaremill.sttp.client3::core:3.3.14`
+import sttp.client3._
+val backend = HttpURLConnectionBackend (options = SttpBackendOptions.httpProxy("", 3128))
+val oauth = ""
+
+// We can selectively pick response json objects via circe library
+case class Response (nextPageToken: String, date: String)
+implicit val responseDecoder : Decoder[Response] = (hCursor: HCursor) => {
+    for {
+        token <- hCursor.get[String]("nextPageToken")
+        date <- hCursor.downField("values").downArray.downField("transaction").get[String]("startTime")
+    } yield Response (token, date)
+}
+
+// Loop though an API to extract the pages
+var a = 1
+var next = "master"
+
+while ( a < 100) {
+    val b = basicRequest.auth.bearer(oauth).get(uri "https://core.example.com/api/catalog/datasets/identifier/transactons/$next?pageSize=100").send(backend)
+    val response = docode[Response](b.body.right.get.toString).right.get
+    next = response.nextPageToken
+    println(reponse.nextPageToken + " " + response.date)
+    a = a + 1
+}
 
 ```
 
