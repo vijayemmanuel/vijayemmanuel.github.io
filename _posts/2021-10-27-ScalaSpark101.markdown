@@ -1,0 +1,150 @@
+---
+layout: post
+title: Spark with Scala 101
+date: 2021-10-27 19:20:23 +0900
+category: spark
+---
+
+Here are some basic terminology and concepts about the usage of Spark 
+
+# From Data Parallel to Distributed Data Parallel
+
+Traditionally when working on one node machine, we perform the compute on single machine (multi core, multi processor) environment. 
+
+Scala collections API like List provides functions to manipulate data in parallel via map, flatmap operations. 
+
+In case of distributed nodes, we perform the same operation on multuple machines where each node work independantly. Though this gives the flexblity when size of data cannot fit into isngle machine, the drawbacks involved more latency due to network. The problem of such a set up includes more chances of failure due to node failures or network outages. 
+
+Scala provides very similar data structure abstraction called RDD (Resilient Distributed Dataset) which very similar methods as Collection API. 
+
+- Latency numbers every programmer should know:
+
+```
+L1 cache reference ......................... 0.5 ns
+Branch mispredict ............................ 5 ns
+L2 cache reference ........................... 7 ns
+Mutex lock/unlock ........................... 25 ns
+Main memory reference ...................... 100 ns             
+Compress 1K bytes with Zippy ............. 3,000 ns  =   3 µs
+Send 2K bytes over 1 Gbps network ....... 20,000 ns  =  20 µs
+SSD random read ........................ 150,000 ns  = 150 µs
+Read 1 MB sequentially from memory ..... 250,000 ns  = 250 µs
+Round trip within same datacenter ...... 500,000 ns  = 0.5 ms
+Read 1 MB sequentially from SSD* ..... 1,000,000 ns  =   1 ms
+Disk seek ........................... 10,000,000 ns  =  10 ms
+Read 1 MB sequentially from disk .... 20,000,000 ns  =  20 ms
+Send packet CA->Netherlands->CA .... 150,000,000 ns  = 150 ms
+```
+
+The following picture provides the latency figures visualization:
+
+![Latency](/assets/general/latencynumbers.png){:class="img-responsive"}
+
+
+# Creating RDD
+
+RDD's can be created by 
+- Transforming an existing RDD
+- From SparkSession (previously called SparkContext) object. Some methods are 
+`parallelize`  which can convert local Scala objects to RDD and `textFile` which can read text files for HDFS 
+
+
+# Transformations and Actions
+
+- Transformations gives back RDD as results. They are "lazy" in nature. Ex: map, flatmap. filter
+- Actions gives back some result (not an RDD). They are "eager in nature. Ex : count, collect, take, reduce
+
+It may be noted that laziness allows further optimization of code by the spark environment before the evaluation of the expression. 
+For example the compiler can decide to filter only the first 10 objects before taking them
+
+```
+val take10 = someRDD.filter ( x => x.contains("sometext)).take(10)
+```
+
+Though RDD's are similar to Scala regular collections, there are some differences on usage of some action methods. 
+For example, the method `foldLeft` or `foldRight` are not available in RDDs
+
+This is beacuse the method take type (B)(B,A) => B). Though this might be very useful as you start folding with a type other then what is in your collection, this is might not be easily parallelizable, due to type error. 
+Instead we can use `aggregate` method. It allows you also to specify a "zero" value of type B and a function like the one you want: (B,A) => B. Do note that you also need to merge separate aggregations done on separate executors, so a (B, B) => B function is also required
+
+
+# Caching and Persistance
+
+- `cache` provides a shorthand for using default storage level which is in-memory only
+- `persist` provides a parameter where we can specify the storage level like disk or memory
+
+
+# Cluster Topology
+
+![Topolgy](/assets/general/sparktopology.png){:class="img-responsive"}
+
+
+
+# Paired RDD
+Spark Paired RDDs are nothing but RDDs containing a key-value pair. Basically, key-value pair (KVP) consists of a two linked data item in it. Here, the key is the identifier, whereas value is the data corresponding to the key value.
+Moreover, Spark operations work on RDDs containing any type of objects. However key-value pair RDDs attains few special operations in it. Such as, distributed “shuffle” operations, grouping or aggregating the elements by a key.
+It also provides join methods over RDD's
+
+# Partitioning and Shuffling
+
+Shuffling is used on Pair RDD to bring data with the same key on same machine. For example, operations like groupByKey causes a shuffle operation to be triggered automatically. It is advised to use reduceByKey to improve performance. 
+
+Properties of Partitioning
+- Partitions never span mulitple machines i.e., tuples in the same partition are guranteed to be on the same machine
+- Each machine in the cluster contains one or more partitions
+- The number of partitions to use is configurable. By default, it equals the total number of cores on all the executors
+
+Types of partitioning
+- Hash Partitioning : Uses the key hash value 
+- Range Partitioning : Usually creates ranges of key which has an order
+
+At the start, Spark's partition is  tied to a data source partitioning logic to exploit the parallelism of the source for the initial reading. Later depending on the operations like join, groupByKey, reduceByKey, sort, mapValues, filter etc, spark may use the same partitiong logic from its parent to shuffle. Exceptions are map/flatmap which may cause partition logic to hold on to child RDD. 
+
+# Narrow and Wide Dependencies
+
+DAG (Directed Acyclic Graph) is the computation pipeline of RDD showing dependency of operations. 
+e
+- Narrow : Each partition of the parent RDD is used by at most one partition of the child RDD. e.g : map, filter, union, join
+This does not trigger a shuffle
+
+- Wide : Each partition of the parent RDD may be dependant on by multiple child partition. . e.g: groupByKey, join 
+This triggers a shuffle
+
+# Spark SQL
+
+Spark SQL provides libraries to work on RDD's with SQL like syntaxes. The components are catalyst (query optimizer) and tungsten (off heap serializer)
+
+- Dataframe is Spark SQL's core abstraction. It is conceptually RDD's with a known schema. They are untyped. 
+It can be created from RDD with toDF method
+
+```
+val tupleRDD = ... // Assume RDD[Int, String, String, Strinng]
+val tupleDF  = tupleRDD.toDF("id", "name","city", "country") // column names
+
+// Or we can also make use of a case class
+case class Person(id: Int, name: String, city : String, country: String)
+val tupleRDD = ... // tupleRDD[Person]
+val tupleRDD = tupleRDD.toDF //column names are inferred from case class 
+```
+It can also be created in data scource from file (json, csv, jdbc, parquet)
+
+```
+val df = spark.read.json("/source.json")
+```
+
+Supported SQL syntax on Spark is given here 
+<https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/spark/sparkSqlSupportedSyntax.html>
+
+- Datasets are "typed" distributed collections of data. We can mix and match Dataframe and RDD API/methods.
+It can ve created from dataframe with `toDS` method. (Require import of spark.implicits._)
+
+
+![SparkArchitecture](/assets/general/sparkarchitecture.png){:class="img-responsive"}
+
+
+
+
+## Credits
+
+* <https://gist.github.com/hellerbarde/2843375>
+* Coursera - Bigdata analysis with Scala and Spark
