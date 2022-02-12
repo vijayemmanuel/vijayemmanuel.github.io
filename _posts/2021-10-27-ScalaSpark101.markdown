@@ -76,7 +76,7 @@ Instead we can use `aggregate` method. It allows you also to specify a "zero" va
 
 # Cluster Topology
 
-![Topolgy](/assets/general/sparktopology.png){:class="img-responsive"}
+![Topolgy](/assets/general/SparkTopology.png){:class="img-responsive"}
 
 
 
@@ -139,7 +139,7 @@ Supported SQL syntax on Spark is given here
 It can ve created from dataframe with `toDS` method. (Require import of spark.implicits._)
 
 
-![SparkArchitecture](/assets/general/sparkarchitecture.png){:class="img-responsive"}
+![SparkArchitecture](/assets/general/SparkArchitecture.png){:class="img-responsive"}
 
 
 
