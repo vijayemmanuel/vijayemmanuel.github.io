@@ -105,7 +105,7 @@ lazy val %% = new ammonite.ops.Command (
 object cd {
     import ammonite.util.Ref
 
-    val focus :Ref[Path] : Ref(pwd)
+    val focus :Ref[Path] = Ref(pwd)
     //override def toString = focus().toString
 
     //Change current directory of this repl session to given [[Path]]
@@ -209,7 +209,7 @@ Consider the following JSON file which needs to be parsed.
 }
 
 // Manipulate the decoded Json to any form
-@ val result = decoded.ResourceTagMappingList.map( x => (x.ResourceARN +: x.Tags.sort.map( y => y.Key + ":" + y.Value))).map(_mkString(",")).mkString("\n")
+@ val result = decoded.ResourceTagMappingList.map( x => (x.ResourceARN +: x.Tags.sortBy(z => z.Key).map( y => y.Key + ":" + y.Value))).map(_.mkString(",")).mkString("\n")
 
 //Write the Json to a file
 @ write (wd/ "result.json", result)
